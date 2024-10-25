@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cryptotracker.core.domain.util.onError
 import com.example.cryptotracker.core.domain.util.onSuccess
+import com.example.cryptotracker.core.presentation.mappers.toUiText
 import com.example.cryptotracker.crypto.domain.CoinDataSource
 import com.example.cryptotracker.crypto.presentation.mappers.toCoinUi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,15 +29,21 @@ class CoinListViewModel(
             initialValue = CoinListState()
         )
 
+    private val _events = Channel<CoinListEvent>()
+    val events = _events.receiveAsFlow()
+
     fun onAction(action: CoinListAction) {
-        when(action) {
+        when (action) {
             is CoinListAction.OnCoinClick -> {}
-            CoinListAction.OnRefresh -> loadCoins()
+            CoinListAction.OnRefresh -> loadCoins(isRefreshing = true)
         }
     }
 
-    private fun loadCoins() {
+    private fun loadCoins(isRefreshing: Boolean = false) {
         viewModelScope.launch {
+            if (isRefreshing) {
+                _state.update { it.copy(isRefreshing = true) }
+            }
             _state.update { it.copy(isLoading = true) }
             coinDataSource
                 .getCoins()
@@ -45,14 +54,17 @@ class CoinListViewModel(
                             coins = coins.map { coin -> coin.toCoinUi() }
                         )
                     }
+                    if (isRefreshing) {
+                        _state.update { it.copy(isRefreshing = false) }
+                    }
                 }
                 .onError { error ->
+                    if (isRefreshing) {
+                        _state.update { it.copy(isRefreshing = false) }
+                    }
                     _state.update { it.copy(isLoading = false) }
+                    _events.send(CoinListEvent.Error(message = error.toUiText()))
                 }
         }
-    }
-
-    private companion object {
-        const val STOP_TIMEOUT_MILLIS = 5000L
     }
 }
