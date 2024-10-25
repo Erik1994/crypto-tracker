@@ -17,7 +17,7 @@ interface HttpClientFactory {
     fun create(engine: HttpClientEngine): HttpClient
 }
 
-object HttpClient : HttpClientFactory {
+object HttpClientFactoryImpl : HttpClientFactory {
     override fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
             install(Logging) {
