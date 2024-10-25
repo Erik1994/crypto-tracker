@@ -6,6 +6,7 @@ plugins {
 }
 
 android {
+    val baseUrl = "BASE_URL"
     namespace = "com.example.cryptotracker"
     compileSdk = 34
 
@@ -26,6 +27,18 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField(
+                type = "String",
+                name = baseUrl,
+                value = "\"https://api.coincap.io/v2\""
+            )
+        }
+        debug {
+           buildConfigField(
+               type = "String",
+               name = baseUrl,
+               value = "\"https://api.coincap.io/v2\""
+           )
         }
     }
     compileOptions {
@@ -36,6 +49,7 @@ android {
         jvmTarget = "11"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
