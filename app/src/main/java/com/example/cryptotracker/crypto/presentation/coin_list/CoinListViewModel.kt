@@ -22,7 +22,7 @@ class CoinListViewModel(
         .onStart { loadCoins() }
         .stateIn(
             scope = viewModelScope,
-            SharingStarted.WhileSubscribed(stopTimeoutMillis = STOP_TIMEOUT_MILLIS),
+            SharingStarted.Lazily,
             initialValue = CoinListState()
         )
 

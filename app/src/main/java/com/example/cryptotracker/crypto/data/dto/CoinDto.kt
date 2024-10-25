@@ -17,6 +17,6 @@ data class CoinDto(
     val marketCapsUsd: Double,
     @SerialName(value = "priceUsd")
     val priceUsd: Double,
-    @SerialName(value = "changePercent24hr")
+    @SerialName(value = "changePercent24Hr")
     val changePercent24Hr: Double
 )
