@@ -41,8 +41,8 @@ class MainActivity : ComponentActivity() {
                     }
                     CoinListScreen(
                         state = coinListState,
-                        onRefresh = { coinListViewModel.onAction(CoinListAction.OnRefresh) },
-                        modifier = Modifier.padding(paddingValues)
+                        onAction = coinListViewModel::onAction,
+                        modifier = Modifier.padding(paddingValues),
                     )
                 }
             }

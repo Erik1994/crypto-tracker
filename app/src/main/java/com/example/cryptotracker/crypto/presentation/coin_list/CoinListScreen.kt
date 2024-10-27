@@ -2,7 +2,6 @@
 
 package com.example.cryptotracker.crypto.presentation.coin_list
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,14 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.example.cryptotracker.crypto.presentation.coin_list.components.CoinListItem
 import com.example.cryptotracker.crypto.presentation.coin_list.components.previewCoin
-import com.example.cryptotracker.crypto.presentation.mappers.toCoinUi
 import com.example.cryptotracker.ui.dimension.LocalDimensions
 import com.example.cryptotracker.ui.theme.CryptoTrackerTheme
 
 @Composable
 fun CoinListScreen(
     modifier: Modifier = Modifier,
-    onRefresh: () -> Unit,
+    onAction: (CoinListAction) -> Unit,
     state: CoinListState,
 ) {
     val dimensions = LocalDimensions.current
@@ -41,12 +39,11 @@ fun CoinListScreen(
             CircularProgressIndicator()
         }
     } else {
-        Log.d("DDDDDD", "CoinListScreen: ${state.isRefreshing}")
         PullToRefreshBox(
             modifier = modifier,
             state = pullToRefreshState,
             isRefreshing = state.isRefreshing,
-            onRefresh = onRefresh
+            onRefresh = { onAction(CoinListAction.OnRefresh) }
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -55,7 +52,7 @@ fun CoinListScreen(
                 items(items = state.coins) { coinUi ->
                     CoinListItem(
                         coinUi = coinUi,
-                        onClick = {},
+                        onClick = { onAction(CoinListAction.OnCoinClick(coinUi)) },
                         modifier = Modifier.fillParentMaxWidth()
                     )
                     HorizontalDivider()
@@ -72,15 +69,11 @@ private fun CoinListScreenPreview() {
         CoinListScreen(
             state = CoinListState(
                 isLoading = false,
-                coins = listOf(
-                    previewCoin.toCoinUi(),
-                    previewCoin.toCoinUi(),
-                    previewCoin.toCoinUi(),
-                    previewCoin.toCoinUi(),
-                    previewCoin.toCoinUi(),
-                )
+                coins = (1..10).map {
+                    previewCoin.copy(id = it.toString())
+                }
             ),
-            onRefresh = {},
+            onAction = {},
             modifier = Modifier.background(MaterialTheme.colorScheme.background)
         )
     }
