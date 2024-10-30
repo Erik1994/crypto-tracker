@@ -131,13 +131,13 @@ fun CoinDetailScreen(
                 var totalChartWidth by remember {
                     mutableFloatStateOf(0f)
                 }
-                val amountOfVisibleDataPoints = if (labelWidth > 0) {
+                val amountOfVisibleDataPoints = if(labelWidth > 0) {
                     ((totalChartWidth - 2.5 * labelWidth) / labelWidth).toInt()
                 } else {
                     0
                 }
-                val startIndex =
-                    (coin.coinPriceHistory.lastIndex - amountOfVisibleDataPoints).coerceAtLeast(0)
+                val startIndex = (coin.coinPriceHistory.lastIndex - amountOfVisibleDataPoints)
+                    .coerceAtLeast(0)
                 LineChart(
                     dataPoints = coin.coinPriceHistory,
                     style = ChartStyle(
@@ -159,16 +159,12 @@ fun CoinDetailScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(16 / 9f)
-                        .onSizeChanged {
-                            totalChartWidth = it.width.toFloat()
-                        },
+                        .onSizeChanged { totalChartWidth = it.width.toFloat() },
                     selectedDataPoint = selectedDataPoint,
                     onSelectedDataPoint = {
                         selectedDataPoint = it
                     },
-                    onXLabelWidthChange = {
-                        labelWidth = it
-                    }
+                    onXLabelWidthChange = { labelWidth = it }
                 )
             }
         }
