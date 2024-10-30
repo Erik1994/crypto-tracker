@@ -1,6 +1,7 @@
 package com.example.cryptotracker.crypto.presentation.models
 
 import androidx.annotation.DrawableRes
+import com.example.cryptotracker.crypto.presentation.coin_detail.DataPoint
 
 data class CoinUi(
     val id: String,
@@ -10,7 +11,8 @@ data class CoinUi(
     val marketCapsUsd: DisplayableNumber,
     val priceUsd: DisplayableNumber,
     val changePercent24Hr: DisplayableNumber,
-    @DrawableRes val iconRes: Int
+    @DrawableRes val iconRes: Int,
+    val coinPriceHistory: List<DataPoint> = emptyList(),
 )
 
 data class DisplayableNumber(

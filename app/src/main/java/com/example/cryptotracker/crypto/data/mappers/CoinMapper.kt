@@ -8,7 +8,6 @@ import com.example.cryptotracker.crypto.domain.Coin
 import com.example.cryptotracker.crypto.domain.CoinPrice
 import java.time.Instant
 import java.time.ZoneId
-import java.time.ZonedDateTime
 
 fun CoinDto.toCoin(): Coin {
     return Coin(
@@ -28,6 +27,6 @@ fun CoinPriceDto.toCoinPrice(): CoinPrice {
         priceUsd = priceUsd,
         dateTime = Instant
             .ofEpochMilli(time)
-            .atZone(ZoneId.of("UTC"))
+            .atZone(ZoneId.systemDefault())
     )
 }

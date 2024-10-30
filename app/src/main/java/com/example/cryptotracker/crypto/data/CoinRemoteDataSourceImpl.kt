@@ -38,7 +38,8 @@ class CoinRemoteDataSourceImpl(
         val (startMillis, endMillis) = (
                 startTime.withZoneSameInstant(ZoneId.of("UTC"))
                     .toInstant()
-                    .toEpochMilli() to endTime.withZoneSameInstant(ZoneId.of("UTC"))
+                    .toEpochMilli() to
+                endTime.withZoneSameInstant(ZoneId.of("UTC"))
                     .toInstant()
                     .toEpochMilli()
                 )
@@ -47,7 +48,7 @@ class CoinRemoteDataSourceImpl(
             params = mapOf(
                 "interval" to "h6",
                 "start" to startMillis,
-                "end" to startMillis
+                "end" to endMillis
             )
         ).map { response ->
             response.data.map { it.toCoinPrice() }
