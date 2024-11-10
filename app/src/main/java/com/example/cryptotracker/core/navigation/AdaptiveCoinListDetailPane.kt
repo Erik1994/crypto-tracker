@@ -41,6 +41,7 @@ fun AdaptiveCoinListDetailPane(
     }
     val navigator = rememberListDetailPaneScaffoldNavigator<Any>()
     NavigableListDetailPaneScaffold(
+        modifier = modifier,
         navigator = navigator,
         listPane = {
             AnimatedPane {
