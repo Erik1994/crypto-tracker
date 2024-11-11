@@ -1,16 +1,27 @@
 package com.example.cryptotracker.crypto.presentation.coin_list
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.util.trace
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cryptotracker.core.domain.util.Result
 import com.example.cryptotracker.core.domain.util.onError
 import com.example.cryptotracker.core.domain.util.onSuccess
 import com.example.cryptotracker.core.presentation.mappers.toUiText
+import com.example.cryptotracker.core.presentation.util.UiText
 import com.example.cryptotracker.crypto.domain.CoinDataSource
+import com.example.cryptotracker.crypto.domain.CoinDataSourceRx
 import com.example.cryptotracker.crypto.presentation.coin_detail.DataPoint
 import com.example.cryptotracker.crypto.presentation.mappers.toCoinUi
 import com.example.cryptotracker.crypto.presentation.models.CoinUi
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.disposables.DisposableContainer
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,12 +35,14 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 class CoinListViewModel(
-    private val coinDataSource: CoinDataSource
+    private val coinDataSource: CoinDataSource,
+    private val coinDataSourceRx: CoinDataSourceRx
 ) : ViewModel() {
 
+    private val disposableContainer = CompositeDisposable()
     private val _state = MutableStateFlow(CoinListState())
     val state = _state
-        .onStart { loadCoins() }
+        .onStart { loadCoinsRx() }
         .stateIn(
             scope = viewModelScope,
             SharingStarted.Lazily,
@@ -43,7 +56,7 @@ class CoinListViewModel(
     fun onAction(action: CoinListAction) {
         when (action) {
             is CoinListAction.OnCoinClick -> selectCoin(action.coinUi)
-            CoinListAction.OnRefresh -> loadCoins(isRefreshing = true)
+            CoinListAction.OnRefresh -> loadCoinsRx(isRefreshing = true)
         }
     }
 
@@ -82,6 +95,42 @@ class CoinListViewModel(
         }
     }
 
+    private fun loadCoinsRx(isRefreshing: Boolean = false) {
+        val disposable: Disposable = coinDataSourceRx.getCoins()
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                if (isRefreshing) {
+                    _state.update { it.copy(isRefreshing = true) }
+                } else {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+            .subscribe(
+                { result ->
+                    result
+                        .onSuccess { coins ->
+                            _state.update {
+                                it.copy(
+                                    coins = coins.map { coin -> coin.toCoinUi() }
+                                )
+                            }
+                        }
+                        .onError {
+                            _events.trySend(CoinListEvent.Error(message = it.toUiText()))
+                        }
+                    if (isRefreshing) {
+                        _state.update { it.copy(isRefreshing = false) }
+                    } else {
+                        _state.update { it.copy(isLoading = false) }
+                    }
+                },
+                {
+                    _events.trySend(CoinListEvent.Error(message = UiText.DynamicString(it.message.orEmpty())))
+                },
+            )
+        disposableContainer.add(disposable)
+    }
+
     private fun loadCoins(isRefreshing: Boolean = false) {
         viewModelScope.launch {
             if (isRefreshing) {
@@ -114,5 +163,10 @@ class CoinListViewModel(
                     _events.send(CoinListEvent.Error(message = error.toUiText()))
                 }
         }
+    }
+
+    override fun onCleared() {
+        disposableContainer.clear()
+        super.onCleared()
     }
 }

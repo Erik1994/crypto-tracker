@@ -13,7 +13,13 @@ ktor = "2.3.12"
 koin = "3.5.6"
 material3-adaptive = "1.0.0"
 compose-material-icons-extended = "1.7.4"
-rxVersion = "3.1.9"
+rxJavaVersion = "3.1.9"
+rxAndroidVersion = "3.0.2"
+retrofitVersion = "2.11.0"
+okhttpVersion = "4.9.0"
+retrofit-kotlinx = "0.8.0"
+retrofitRxAdapter = "3.0.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,7 +50,13 @@ androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-ru
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-compose-material3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "material3-adaptive" }
 compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "compose-material-icons-extended" }
-rx = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxVersion" }
+rx-java = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxJavaVersion" }
+rx-android = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxAndroidVersion" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
+retrofit-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofitVersion" }
+retrofit-kotlinx = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit-kotlinx" }
+retrofit-rx-adapter = { module = "com.github.akarnokd:rxjava3-retrofit-adapter", version.ref = "retrofitRxAdapter" }
+okhttp = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttpVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -79,4 +91,15 @@ ktor = [
     "ktor-client-core",
     "ktor-client-logging",
     "ktor-serialization-kotlinx-json"
+]
+rx = [
+    "rx-android",
+    "rx-java"
+]
+retrofit-bundle = [
+    "retrofit",
+    "retrofit-gson",
+    "okhttp",
+    "retrofit-kotlinx",
+    "retrofit-rx-adapter"
 ]

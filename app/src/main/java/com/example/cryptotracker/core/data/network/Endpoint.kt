@@ -4,11 +4,13 @@ import com.example.cryptotracker.BuildConfig
 
 sealed class Endpoint(val url: String) {
 
-    data object Assets : Endpoint("$BASE_URL/assets")
+    data object Assets : Endpoint("${BASE_URL}assets")
 
-    data class History(val id: String): Endpoint("$BASE_URL/assets/$id/history")
+    data class History(val id: String): Endpoint("${BASE_URL}assets/$id/history")
 
-    private companion object {
+    companion object {
         const val BASE_URL = BuildConfig.BASE_URL
+        const val ASSETS = "assets"
+        const val HISTORY = "history"
     }
 }

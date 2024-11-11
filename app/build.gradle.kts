@@ -30,14 +30,14 @@ android {
             buildConfigField(
                 type = "String",
                 name = baseUrl,
-                value = "\"https://api.coincap.io/v2\""
+                value = "\"https://api.coincap.io/v2/\""
             )
         }
         debug {
            buildConfigField(
                type = "String",
                name = baseUrl,
-               value = "\"https://api.coincap.io/v2\""
+               value = "\"https://api.coincap.io/v2/\""
            )
         }
     }
@@ -69,7 +69,8 @@ dependencies {
 
     implementation(libs.bundles.ktor)
 
-    implementation(libs.rx)
+    implementation(libs.bundles.rx)
+    implementation(libs.bundles.retrofit.bundle)
 
     testImplementation(libs.junit)
 
